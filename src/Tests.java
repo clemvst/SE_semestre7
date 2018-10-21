@@ -5,8 +5,8 @@ public class Tests {
 
     public void Tests(){
         SortedHeap<Integer> integerSortedHeap = new SortedHeap(20, new ComparatorInt());
-        for( int i = 0; i<15 ; i++){
-            integerSortedHeap.insertElement(150+i);
+        for( int i = 0; i<5 ; i++){
+            integerSortedHeap.insertElement(450+i);
         }
         integerSortedHeap.insertElement(233);
         integerSortedHeap.insertElement(3);

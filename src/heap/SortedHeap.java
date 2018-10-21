@@ -10,9 +10,9 @@ public class SortedHeap<E> implements Heap<E> {
     private int size = 0;
     private Object queue[];
     private final int capacity;
-    private final Comparator<? super E> comparator;
+    private final Comparator<E> comparator;
 
-    public SortedHeap(int capacity, Comparator<? super E> comparator) {
+    public SortedHeap(int capacity, Comparator<E> comparator) {
         /**
          * this is the constructor SortedHeap
          */
@@ -22,6 +22,13 @@ public class SortedHeap<E> implements Heap<E> {
         this.queue = new Object[this.capacity];
     }
 
+    public String affich() {
+        String ch = "";
+        for (int i = 0; i < this.capacity; i++) {
+            ch += ("node number " + i + " : " + this.queue[i] + "\n");
+        }
+        return ch;
+    }
 
     private class HeapArrayIterator<E> implements Iterator<E> {
         /**
@@ -34,7 +41,7 @@ public class SortedHeap<E> implements Heap<E> {
         }
 
         public boolean hasNext() {
-            return !(SortedHeap.this.capacity - 1 == id);
+            return (this.id<size-1);
             /**
              * if everything has been done, id equals size and there is nothing left to do
              * so it returns FALSE
@@ -47,7 +54,7 @@ public class SortedHeap<E> implements Heap<E> {
              * returns the next element in the iteration or sends an exception when no element
              */
             if (hasNext()) {
-                //id += 1;
+
                 return (E) SortedHeap.this.queue[++id];
             } else {
                 throw new NoSuchElementException("No element next");
@@ -59,59 +66,49 @@ public class SortedHeap<E> implements Heap<E> {
         return new HeapArrayIterator<E>();
     }
 
+    private int father_node(int node){
+        if (node>0) {
+            return (node - 1) / 2;
+        }
+        else{
+            return 0;
+        }
+    }
+
+    private int mini(){
+        int minimum = capacity/2;
+        E item_min = (E)queue[minimum];
+        for (int i = minimum;i<capacity;i++){
+            if (comparator.compare((E)queue[i],item_min)<0) {
+                minimum = i;
+                item_min = (E) queue[minimum];
+            }
+        }
+        return minimum;
+    }
+
+
+    private void switching(int a, int b){
+        E value = (E) queue[a];
+        queue[a] = (E) queue[b];
+        queue[b] = value;
+    }
 
     private void go_up(int node) {
-        int father_node = (node - 1) / 2;
-        E value = (E) queue[father_node];
-        while (comparator.compare(value, (E) queue[node]) < 0) {
+        int father_node = father_node(node);
+        while (comparator.compare((E) queue[father_node], (E) queue[node]) < 0) {
             /**
              * while father_node (father) < node (child), we reverse father and child
              */
-            queue[father_node] = (E) queue[node];
-            queue[node] = value;
+            switching(father_node, node);
+            node=father_node(node);
+
         }
     }
 
-
-    private void go_down() {
-        /**
-         * k represents the layer and l represents a spot within the layer k
-         */
-        int k = 0;
-        int l = 0;
-
-        int node = (int) (l + Math.pow(2, k) - 1);
-        int node_child1 = (int) (2 * l + Math.pow(2, k + 1) - 1);
-        int node_child2 = (int) (2 * l + Math.pow(2, k + 1));
-        E value = (E) queue[node];
-
-        while (comparator.compare(value, (E) queue[node_child1]) < 0 || comparator.compare(value, (E) queue[node_child2]) < 0) {
-            /**
-             * -- reverses the father and the biggest child --
-             * first we compare each child with his father
-             * then we compare the children and pick the biggest
-             * finally we reverse the biggest child and the father
-             */
-            int chosen_child;
-            if (comparator.compare((E) queue[node_child1], (E) queue[node_child2]) < 0) {
-                /**
-                 * tests if the child 2 is bigger than the child 1
-                 * if yes, we reverse father and child 2
-                 */
-                chosen_child = node_child2;
-            } else {
-                chosen_child = node_child1;
-            }
-
-            queue[node] = (E) queue[chosen_child];
-            queue[chosen_child] = value;
-
-        }
-
-    }
 
     public boolean insertElement(E e) {
-        if (this.size < this.capacity) {
+        if (this.size != this.capacity) {
             queue[size] = e;
             go_up(size);
             size++;
@@ -120,21 +117,25 @@ public class SortedHeap<E> implements Heap<E> {
              * If the capacity has been reached.
              */
             this.queue = Arrays.copyOf(queue, capacity * 2);
+        }else{
+            int mini = mini();
+            queue[mini] = e;
+            go_up(mini);
         }
         return true;
     }
 
 
     public E popElement() throws NoSuchElementException {
-        if (size == 0) {
+        if (isEmpty()) {
             throw new NoSuchElementException("No element");
         } else {
-            E returned = (E) queue[0];
             size--;
-            queue[0] = queue[size];
+            int mini = mini();
+            queue[mini]=queue[size];
             queue[size] = null;
-            go_down();
-            return returned;
+            go_up(mini);
+            return (E)queue[mini];
         }
     }
 
@@ -150,7 +151,7 @@ public class SortedHeap<E> implements Heap<E> {
         /**
          * returns true if heap is empty
          */
-        return (size() == 0);
+        return size == 0;
     }
 
     public int size() {
@@ -169,11 +170,4 @@ public class SortedHeap<E> implements Heap<E> {
         }
     }
 
-    public String affich() {
-        String ch = "";
-        for (int i = 0; i < this.capacity; i++) {
-            ch += ("node number " + i + " : " + this.queue[i] + "\n");
-        }
-        return ch;
-    }
 }
