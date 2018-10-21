@@ -12,7 +12,7 @@ public class SortedHeap<E> implements Heap<E> {
     private final int capacity;
     private final Comparator<? super E> comparator;
 
-    private SortedHeap(int capacity, Comparator<? super E> comparator) {
+    public SortedHeap(int capacity, Comparator<? super E> comparator) {
         /**
          * this is the constructor SortedHeap
          */

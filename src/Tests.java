@@ -5,7 +5,7 @@ public class Tests {
 
     public void Tests(){
         SortedHeap<Integer> integerSortedHeap = new SortedHeap(20, new ComparatorInt());
-        for( int i = 0, i<15 ; i++){
+        for( int i = 0; i<15 ; i++){
             integerSortedHeap.insertElement(150+i);
         }
         integerSortedHeap.insertElement(233);
@@ -14,12 +14,13 @@ public class Tests {
         integerSortedHeap.insertElement(599990);
         integerSortedHeap.insertElement(0);
 
-        assert(599990,(int)integerSortedHeap.elementback(0));
-        assert(3,(int)integerSortedHeap.elementback(1));
-        assert(599990,(int)integerSortedHeap.popElement());
-        assert(233,(int)integerSortedHeap.popElement());
-        assert(233,integerSortedHeap.isEmpty());
-        assert(3,integerSortedHeap.size());
+        assert integerSortedHeap.elementback(0) == 599990;
+        assert integerSortedHeap.elementback(1) == 233;
+        assert integerSortedHeap.elementback(2) == 164;
+        assert integerSortedHeap.popElement() == 599990;
+
+        assert integerSortedHeap.isEmpty();
+        assert integerSortedHeap.size() == 18;
 
     }
 }
